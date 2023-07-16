@@ -6,84 +6,100 @@ stable diffusion prompting/training related scripts
 
 <p>
 
-#### 自动化生成
 
-`benchmark_mod.py`: 
-
-- 通过API连接webui, 根据配置批量生成图片
-- 用于模型评价, 或者配合随机prompt实现全自动色图
-- 配置方式见 `do_benchmark()`
-
-- 需要在webui启动项加上`--api`
+**V2: 重新变成python package的形式**
 
 
-最简使用例 (`benchmark_mod.py` → `do_benchmark()`):
+
+## Class
+`SDTools` (sdt): 核心class, 包含功能所需的各项数据
+
+`gensettings` (gs): 生成输入词的参数class
+
+`benchsettings` (bs): 生成API测试的参数class
+
+`tags.json`: 自定义词语包含关系, 见例子
+
+
+## 安装
+一行版:
+```bash
+pip install git+https://github.com/trojblue/sdtools.git#egg=sdtools
+```
+手动安装:
+```bash
+git clone https://github.com/trojblue/sdtools
+cd sdtools
+python3 setup.py install
+```
+
+## 功能
+
+**处理训练集:** 清除metadata/翻转, 支持多线程
 ```python
-# 设置参数
-preset_EVAL_SAMPLER = {
-    "folder_name": "test_orange_oversized",
-    "sampler_list": "Euler, Euler a, DDIM, DPM++ 2M Karras".split(", "),
-    "step_list": [15, 20, 25, 31, 39, 52, 69, 120],
-    "cfg_list": [7],
-    "resolution": (1024, 768),
-    "prompt_list": [p_orange_white_miku]
-}
+from sdtools.sdt import SDTools
 
-p = preset_EVAL_SAMPLER
+# 只能原地覆写, 运行前先手动保存一份备份
+src_dir = dst_dir ="D:\Andrew\Pictures\Grabber\c123Eagle.OG - 副本"
+sdt = SDTools(src_dir=src_dir, dst_dir=dst_dir, gs=None)
 
-# 生成json
-bench_json = gen_tests(sampler_list=p["sampler_list"],
-                       step_list=p["step_list"],
-                       cfg_list=p["cfg_list"],
-                       prompt_list=p["prompt_list"],
-                       netagive=neg_realistic,
-                       resolution=p["resolution"],
-                       seed_list=None
-                       )
-# 连接到webui api
-do_single_grid(bench_json, folder_name=p["folder_name"], gen_summary_img=False)
+# 复制文件夹所有txt里的prompt到剪贴板
+# sdt.do_get_prompts()
+
+# 去除metadatam, 覆盖原文件(即不添加suffix)
+sdt.do_remove_info(add_suffix = False, new_meta="")
+
+sdt.do_flip()       # 创建翻转图片
+sdt.do_shuffle()    # 打乱顺序
+```
+
+**生成随机输入:**
+
+```python
+from sdtools import sdt
+from sdtools.config_gen import main_settings
+
+src_dir = "D:\Andrew\Pictures\Grabber\c123Eagle.OG"
+sdt = sdt.SDTools(src_dir=src_dir, gs=main_settings)
+line = sdt.gen_prompt(tag_count=35, line_count=2)
+```
+
+**benchmark:** 随机词模式
+
+```python
+import sdtools
+from sdtools.benchmark import BenchSettings
+, preset_EVAL_MODEL_RANDOM_longer
+
+gs = sdtools.settings.main_settings
+bs = BenchSettings(preset_EVAL_MODEL_RANDOM_longer)
+src_dir = dst_dir = "D:\Andrew\Pictures\Grabber\c123Eagle.OG - 副本"
+sdt = sdtools.sdt.SDTools(src_dir=src_dir, dst_dir=dst_dir, gs=gs, bs=bs)
+
+sdt.do_random_benchmark()
 ```
 
 
-#### 生成随机prompt
+说明见`/sdtools/sdt.py`的method注释, 比如说:
+```python
+def do_remove_info(self, low_profile=True):
+    """去除src_dir里图片的metadata, 复制到dst_dir
+    """
+    aug_i.do_remove_info(self.src_dir, self.dst_dir, low_profile)
 
-`gen_prompts.py` 
+def do_get_prompts(self):
+    """复制src_dir里所有图片正面tag, 输出到剪贴板
+    """
+    aug_i.do_get_prompts(self.src_dir)
 
-- 根据训练集的txt随机生成prompt, 复制到剪贴板
-- 配合webui的脚本"prompts from file or textbox"使用
+def do_flip(self):
+    """在target_dir创建src_dir图片的翻转版, 并复制txt到旁边
+    """
+    aug_i.do_flip(self.src_dir, self.dst_dir)
 
+def do_shuffle(self):
+    """打乱src_dir数据集顺序, 输出到target_dir
+    """
+    aug_i.do_shuffle(self.src_dir, self.dst_dir)
 ```
-vital tags: 一定会出现的tag, 写入质量词
-accent tags: 列表里一定随机选择n个的tag, 写入自己的xp
-taboo_tags: 避免出现的tag
-mutex_tags: 互相冲突, 只能出现一个的tag
-```
-
-
-#### 处理数据集
-
-`aug_text.py`: 清理txt格式的tag文件
-
-`aug_image.py`: 
-
-- 翻转图片(而不裁剪成正方形), 用于arb训练; 
-- 复制txt到翻转后的图片旁边
-- 随机打乱图片顺序
-- 删除图片的EXIF / PNG chunk信息
-
-
-
-#### 其他
-
-**tags.json:**
-
-根据输入类型, 自动处理mutex/mutable/coexist
-
-- mutex: 只能存在一种, 比如`blue hair`和`blonde hair`会互相冲突
-- mutable: 在指定元素中选择一定比例包含在prompt里
-- coexist: 生成特定人物时必须包含要素, 比如初音要有蓝/绿头发
-
-**settings**:
-
-项目的设置都在这里, 具体见注释
 
