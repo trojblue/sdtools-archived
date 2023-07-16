@@ -1,0 +1,119 @@
+{
+  "_comment": "可用种类: mutex(只允许出现一个), mutable(允许同时出现)",
+
+
+  "hair_color_tags":{
+    "type": "mutex",
+    "tags": [
+        "blue_hair",
+        "red_hair",
+        "aqua_hair",
+        "white_hair",
+        "black_hair",
+        "cyan_hair",
+        "blonde_hair",
+        "orange_hair",
+        "green_hair",
+        "purple_hair"
+      ]
+  } ,
+  "eye_color_tags":{
+    "type": "mutex",
+    "tags": [
+        "blue_eyes",
+        "red_eyes",
+        "aqua_eyes",
+        "white_eyes",
+        "black_eyes",
+        "cyan_eyes",
+        "blonde_eyes",
+        "orange_eyes",
+        "green_eyes",
+        "purple_eyes"
+      ]
+  } ,
+
+
+  "miku_tags": {
+      "type": "mutable",
+      "tags": [
+          "hatsune_miku",
+          "vocaloid",
+          "project_sekai",
+          "suna_no_wakusei_\\(vocaloid\\)",
+          "miku_symphony_\\(vocaloid\\)"
+        ]
+    },
+
+  "remotely_miku_tags": {
+      "type": "mutable",
+      "tags": [
+          "twintails",
+          "headphones",
+          "aqua_hair",
+          "aqua_eyes"
+        ]
+    },
+
+  "mouth_tags": {
+      "type": "mutex",
+      "tags": [
+          "closed_mouth",
+          "open_mouth"
+        ]
+    },
+
+  "foot_tags": {
+      "type": "mutex",
+      "tags": [
+          "highheels",
+          "barefoot"
+        ]
+    },
+
+  "character_tags":{
+    "type": "mutex",
+    "tags": [
+      "hatsune_miku",
+      "blonde_hair",
+      "gold_hair",
+      "red_hair",
+      "brown_eyes"
+    ]
+  },
+
+  "leg_tags": {
+      "type": "mutex",
+      "tags": [
+          "pantyhose",
+          "thighhighs",
+          "single thighhgih"
+        ]
+    },
+
+  "sex_tags": {
+    "type": "mutex",
+    "tags": [
+      "thighhighs", "thigh strap", "breasts", "collar", "stockings", "bodysuit"
+    ]
+  },
+
+  "animal_tags": {
+    "type": "mutex",
+    "tags": [
+      "cat girl", "dog girl"
+    ]
+  },
+
+
+  "distance_tags": {
+    "type": "mutex",
+    "tags": []
+  },
+
+  "sample_tags": {
+    "type": "mutex",
+    "tags": []
+  }
+
+}
