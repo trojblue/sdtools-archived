@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Web UI</title>
+</head>
+<body>
+    <h1>My Web UI</h1>
+
+    <button id="pause_or_continue">Pause/Continue</button>
+    <input id="name" type="text" placeholder="Enter your name">
+    <button id="send_name">Send</button>
+
+    <script>
+        // Add an event listener to the button that sends an AJAX request to the /pause_or_continue endpoint
+        document.getElementById("pause_or_continue").addEventListener("click", function() {
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "/pause_or_continue", true);
+            xhr.send();
+        });
+    </script>
+</body>
+</html>
